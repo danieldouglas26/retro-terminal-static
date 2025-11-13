@@ -1,0 +1,263 @@
+/* =================================================================== */
+/* 1. Variáveis Globais (Tema e Cores)
+/* =================================================================== */
+:root {
+    /* Dimensões principais */
+    --monitor-width: 98vw;
+    --monitor-height: 95vh;
+    --monitor-padding: 20px;
+
+    /* Cores principais do tema "fósforo verde" (CRT) */
+    --screen-bg: #081408; /* Fundo da tela (preto/verde escuro) */
+    --phosphor-color: #45ff45; /* Cor do texto principal */
+    --phosphor-glow-1: #39ff39; /* Brilho suave do texto */
+    --phosphor-glow-2: #159915; /* Brilho forte do texto */
+
+    /* Efeitos de scanline (linhas de varredura) */
+    --scanline-color-1: rgba(65, 92, 76, 0.15);
+    --scanline-color-2: rgba(0, 255, 100, 0.05);
+
+    /* Cores de utilidade para o texto */
+    --text-info: #88ff88; /* Cor para informações (mais clara) */
+}
+
+/* =================================================================== */
+/* 2. Configuração Base (Página)
+/* =================================================================== */
+html, body {
+    margin: 0;
+    height: 100%;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000 90%); /* Fundo escuro atrás do monitor */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Evita scroll na página inteira */
+    font-family: 'Fira Code', monospace; /* Fonte monoespaçada para o visual "dev" */
+}
+
+/* =================================================================== */
+/* 3. Estrutura do Monitor (Moldura)
+/* =================================================================== */
+.monitor {
+    position: relative;
+    width: var(--monitor-width);
+    height: var(--monitor-height);
+    max-width: 1600px;
+    background: linear-gradient(145deg, #333 0%, #111 100%); /* Moldura de plástico escuro */
+    border-radius: 2.5rem;
+    box-shadow:
+        0 0 0 15px #080808, /* Borda preta extra */
+        inset 0 0 80px rgba(0,0,0,0.8), /* Sombra interna na moldura */
+        0 50px 100px rgba(0,0,0,0.6); /* Sombra projetada do monitor */
+    display: flex;
+    padding: var(--monitor-padding); /* Espaçamento entre a moldura e a tela */
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+}
+
+/* =================================================================== */
+/* 4. Tela (Área de Exibição) e Efeitos CRT
+/* =================================================================== */
+.screen {
+    width: 100%;
+    height: 100%;
+    background-color: var(--screen-bg); /* Fundo da tela */
+    border-radius: 1.5rem; /* Vidro arredondado */
+    overflow: hidden; /* Garante que os efeitos fiquem dentro da tela */
+    position: relative;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.7); /* Sombra interna (efeito de profundidade) */
+    cursor: text;
+    transition: border-radius 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column; /* Organiza o terminal e o input-bar verticalmente */
+}
+
+/* Efeitos de overlay (sobreposição) para simular um monitor CRT */
+.screen::before, .screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none; /* Permite clicar através dos efeitos */
+}
+
+/* Efeito de brilho central (vignette) */
+.screen::before {
+    background: radial-gradient(ellipse at center, rgba(0,255,100,0.1) 0%, transparent 70%);
+    z-index: 2;
+}
+
+/* Efeito de scanlines (linhas de varredura) e ruído */
+.screen::after {
+    background-image:
+        repeating-linear-gradient(0deg, transparent, var(--scanline-color-1) 1px, transparent 2px),
+        repeating-linear-gradient(90deg, var(--scanline-color-2) 1px, transparent 2px);
+    background-size: 100% 3px, 3px 100%;
+    opacity: 0.4;
+    animation: noise 0.15s linear infinite; /* Animação de ruído sutil */
+    z-index: 3;
+}
+
+/* =================================================================== */
+/* 5. Conteúdo do Terminal (Log de Texto)
+/* =================================================================== */
+.terminal {
+    color: var(--phosphor-color); /* Cor padrão do texto */
+    font-size: clamp(14px, 1.5vw, 18px); /* Tamanho de fonte responsivo */
+    padding: 25px;
+    box-sizing: border-box;
+    overflow-y: auto; /* Scroll automático quando o conteúdo excede a altura */
+    position: relative;
+    z-index: 1; /* Fica atrás dos efeitos de overlay */
+    text-shadow: /* Efeito de brilho (glow) no texto */
+        0 0 5px var(--phosphor-glow-1),
+        0 0 15px var(--phosphor-glow-2);
+    animation: flicker 0.1s infinite; /* Animação de "tremido" sutil */
+    transition: padding 0.3s ease-in-out;
+    flex-grow: 1; /* Faz o terminal ocupar todo o espaço disponível */
+}
+
+/* =================================================================== */
+/* 6. Animações
+/* =================================================================== */
+@keyframes noise {
+    0% { background-position: 0 0; }
+    100% { background-position: 10% 10%; }
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.98; }
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* =================================================================== */
+/* 7. Componentes do Terminal (Cursor, Scroll, Classes de Texto)
+/* =================================================================== */
+.cursor {
+    display: inline-block;
+    background-color: var(--phosphor-color);
+    box-shadow: 0 0 5px var(--phosphor-glow-1);
+    width: 10px;
+    height: 1.2em;
+    animation: blink 1.2s step-end infinite; /* Animação de piscar */
+    vertical-align: bottom;
+    margin-left: 2px;
+}
+
+/* Esconde a barra de rolagem (mantém a funcionalidade) */
+.terminal::-webkit-scrollbar { width: 0; }
+
+/* Classes utilitárias para colorir a saída do terminal */
+.text-success { color: var(--phosphor-color); }
+.text-error { color: #ff5555; } /* Cor de erro (vermelho) */
+.text-info { color: var(--text-info); }
+.text-comment { color: #45ff45; opacity: 0.6; } /* Cor para texto "comentado" */
+
+/* =================================================================== */
+/* 8. Componentes de Input (Desktop e Mobile)
+/* =================================================================== */
+
+/* Por padrão, o input mobile fica oculto */
+.mobile-prompt-label, .input-bar { display: none; }
+
+.prompt-label {
+    color: var(--text-info);
+    white-space: nowrap;
+}
+
+/* Área de digitação (contenteditable) */
+.input-area {
+    flex-grow: 1;
+    outline: none;
+    word-break: break-all;
+    min-width: 10px;
+    color: #a2ffbd; /* Cor do texto do usuário (ligeiramente diferente) */
+}
+
+/* Botões de histórico (Mobile) */
+.history-buttons button {
+    background: transparent;
+    border: 1px solid var(--phosphor-color);
+    color: var(--phosphor-color);
+    font-size: 1em;
+    padding: 2px 8px;
+    margin-left: 8px;
+    border-radius: 4px;
+    line-height: 1.5;
+    opacity: 0.8;
+}
+
+/* Botão "Copiar Resultado" */
+.copy-button {
+    background-color: transparent;
+    border: 1px solid var(--phosphor-color);
+    color: var(--phosphor-color);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+    padding: 5px 10px;
+    margin: 15px 0 10px 0;
+    cursor: pointer;
+    text-shadow: inherit;
+    transition: all 0.2s ease;
+}
+.copy-button:hover {
+    background-color: var(--phosphor-color);
+    color: var(--screen-bg);
+}
+
+/* =================================================================== */
+/* 9. Responsividade (Layout Mobile)
+/* =================================================================== */
+@media (max-width: 768px) {
+    body {
+        align-items: flex-start; /* Alinha o monitor no topo */
+    }
+
+    /* O monitor ocupa a tela inteira, sem moldura */
+    .monitor {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100%;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .screen { border-radius: 0; }
+
+    /* Reduz o padding do terminal no mobile */
+    .terminal {
+        font-size: clamp(13px, 3vw, 16px);
+        padding: 15px 15px 0 15px;
+    }
+
+    .copy-button {
+        padding: 8px 12px;
+        font-size: 1em;
+    }
+    
+    /* Esconde o prompt de input do desktop */
+    .prompt.desktop-only { display: none; }
+    
+    /* Exibe o label e a barra de input fixos do mobile */
+    .mobile-prompt-label {
+        display: block;
+        padding: 10px 15px 8px 15px;
+        color: var(--text-info);
+        font-size: 0.9em;
+        opacity: 0.8;
+        flex-shrink: 0;
+    }
+
+    .input-bar {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #000; /* Fundo para a barra de input */
+        border-top: 1px solid var(--phosphor-glow-2);
+        flex-shrink: 0; /* Impede que a barra encolha */
+    }
+}

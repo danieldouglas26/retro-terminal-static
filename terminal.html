@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capsys Corp. Terminal de Consulta</title>
+<link rel="icon"  href="assets/terminal.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css"> 
+</head>
+<body>
+
+<div class="monitor">
+    <div class="screen">
+        <canvas id="matrix-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; display:none;"></canvas>
+        <div class="terminal" id="terminal"></div>
+        
+        <div class="mobile-prompt-label"></div>
+        <div class="input-bar">
+            <span class="prompt-label"></span>
+            <span class="input-area" contenteditable="true"></span>
+            <span class="cursor"></span>
+            <div class="history-buttons">
+                <button id="history-up">▲</button>
+                <button id="history-down">▼</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/script.js" defer></script>
+
+
+</body>
+</html>
