@@ -10,7 +10,7 @@ Este projeto é um template front-end (HTML, CSS e JavaScript) que simula um ter
 
 A versão funcional e completa deste terminal, feita em Angular, conectada à API real do **OpenCaramelo**, está disponível no seguinte link:
 
-### [https://terminal.opencnpj.com](https://terminal.opencnpj.com)
+### [https://terminal.opencnpj.com](https://terminal.opencaramelo.com)
 
 ---
 
